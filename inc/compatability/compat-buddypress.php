@@ -28,7 +28,50 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
          * @since 2.3.14
          */
         public function hooks() {
+            add_filter( 'aioseop_title', array( &$this, 'filter_title' ), 10 );
             add_filter( 'aioseop_description', array( &$this, 'filter_description' ), 1, 2 );
+        }
+
+        /**
+         * Filters meta titles.
+         * action:aioseop_title
+         *
+         * @since 2.3.14
+         *
+         * @global object $bp BuddyPress global object.
+         *
+         * @param string $title Current title.
+         *
+         * @return string
+         */
+        public function filter_title( $title ) {
+            global $bp;
+            /*
+             * Check if we are displaying an individual activity.
+             * - Activity display
+             * - User activity
+             */
+            if ( is_page()
+                && $bp->current_component === 'activity'
+                && isset( $bp->displayed_user->id )
+            ) {
+                $activity = new BP_Activity_Activity( $bp->current_action );
+                $action = strip_tags( preg_replace( '#<a.*?>([^>]*)</a>#i', '$1', $activity->action ) );
+                $replacement = preg_match( '/group\\s[a-zA-Z]+/', $action, $matches )
+                    ? sprintf(
+                        __( 'Activity by %s in the %s', 'all-in-one-seo-pack' ),
+                        $bp->displayed_user->userdata->display_name,
+                        $matches[0]
+                    )
+                    : sprintf(
+                        __( 'Activity by %s', 'all-in-one-seo-pack' ),
+                        $bp->displayed_user->userdata->display_name
+                    );
+                $title = preg_replace( '/[Aa]ctivity/', $replacement, $title );
+                // Replace [Part] postfix
+                $title = preg_replace( '/\s\-\s[Pp]art\s[0-9]+/', '', $title );
+            }
+            return $title;
         }
 
         /**
@@ -44,6 +87,8 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
          *
          * @param string $description Current description.
          * @param string $prefix      AIOSEOP module prefix.
+         *
+         * @return string
          */
         public function filter_description( $description, $prefix = null ) {
             global $bp, $aioseop_options;
@@ -60,9 +105,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
                     || $aioseop_options['aiosp_generate_descriptions'] === 'on'
                 )
             ) {
-                // Get activity
                 $activity = new BP_Activity_Activity( $bp->current_action );
-                // Reset description
                 $description = $activity->action . ( $activity->content ? ': ' . $activity->content : '' );
             }
             return $description;
