@@ -35,6 +35,8 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
          * Filters meta descriptions.
          * action:aioseop_description
          *
+         * @see https://stackoverflow.com/questions/8914476/facebook-open-graph-meta-tags-maximum-content-length
+         *
          * @since 2.3.14
          *
          * @global object $bp              BuddyPress global object.
@@ -60,7 +62,8 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
             ) {
                 // Get activity
                 $activity = new BP_Activity_Activity( $bp->current_action );
-                return $activity->action . ( $activity->content ? ': ' . $activity->content : '' );
+                // Reset description
+                $description = $activity->action . ( $activity->content ? ': ' . $activity->content : '' );
             }
             return $description;
         }
