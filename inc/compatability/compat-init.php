@@ -136,11 +136,16 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Compatibility' ) ) {
 		 *
 		 * @since 2.3.6
 		 * @since 2.3.12.3 WPML compatibility loaded.
+		 * @since 2.3.14 BuddyPress compatibility loaded.
 		 */
 		public function load_compatibility_classes() {
-			require_once( AIOSEOP_PLUGIN_DIR . 'inc/compatability/compat-wpml.php' ); // Load classes.
+			require_once( AIOSEOP_PLUGIN_DIR . 'inc/compatability/compat-wpml.php' );
+			require_once( AIOSEOP_PLUGIN_DIR . 'inc/compatability/compat-buddypress.php' );
 			// Evaluate classes and push them into array
 			$target = new All_in_One_SEO_Pack_Wpml;
+			if ( $target->exists() )
+				$this->classes[] = $target;
+			$target = new All_in_One_SEO_Pack_BuddyPress;
 			if ( $target->exists() )
 				$this->classes[] = $target;
 			// Eventually we'll load our other classes from here.

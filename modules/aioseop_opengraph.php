@@ -728,6 +728,12 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 			return $options;
 		}
 
+		/**
+		 * Filters settings.
+		 *
+		 * @since 2.3.13 Added filter aioseop_description.
+		 * @since 2.3.14 Added prefix to filter aioseop_description.
+		 */
 		function filter_settings( $settings, $location, $current ) {
             global $aiosp, $post;
 			if ( $location == 'opengraph' || $location == 'settings' ) {
@@ -772,12 +778,10 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 	                            $aiosp->internationalize( preg_replace( '/\s+/', ' ', $post->post_content ) ),
 	                            1000
 	                        );
-
-          // Add filters
-					$description = apply_filters( 'aioseop_description', $description );
+          			// Add filters
+					$description = apply_filters( 'aioseop_description', $description, $this->prefix );
 					// Add placholders
-          
-          $settings["{$prefix}title"]['placeholder'] = $title;
+          			$settings["{$prefix}title"]['placeholder'] = $title;
 					$settings["{$prefix}desc"]['placeholder']  = $description;
 				}
 				if ( isset( $current[ $prefix . 'setmeta' ] ) && $current[ $prefix . 'setmeta' ] ) {
@@ -898,6 +902,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 		 * @since 1.0.0
 		 * @since 2.3.11.5 Support for multiple fb_admins.
 		 * @since 2.3.13   Adds filter:aioseop_description on description.
+		 * @since 2.3.14   Added prefix to filter aioseop_description.
 		 */
 		function add_meta() {
 			global $post, $aiosp, $aioseop_options, $wp_query;
@@ -1218,7 +1223,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 			}
 
 			// Apply last filters.
-			$description = apply_filters( 'aioseop_description', $description );
+			$description = apply_filters( 'aioseop_description', $description, $this->prefix );
 
 			$meta = Array(
 				'facebook' => Array(
