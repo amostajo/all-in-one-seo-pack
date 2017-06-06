@@ -10,7 +10,17 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
      * @copyright Semperfi Web Design <https://semperplugins.com/>
      * @version 2.3.14
      */
-    class All_in_One_SEO_Pack_BuddyPress extends All_in_One_SEO_Pack_Compatible {
+    class All_in_One_SEO_Pack_BuddyPress extends All_in_One_SEO_Pack_Module {
+
+        /**
+         * Prefix.
+         *
+         * @since 2.3.14
+         *
+         * @var string
+         */
+        protected $prefix = 'aiosp_buddypress_';
+
         /**
          * Returns flag indicating if BuddyPress is present.
          *
@@ -30,6 +40,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
         public function hooks() {
             add_filter( 'aioseop_title', array( &$this, 'filter_title' ), 10 );
             add_filter( 'aioseop_description', array( &$this, 'filter_description' ), 1, 2 );
+            add_action( 'admin_init', array( &$this, 'admin_init' ) );
         }
 
         /**
@@ -109,6 +120,41 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
                 $description = $activity->action . ( $activity->content ? ': ' . $activity->content : '' );
             }
             return $description;
+        }
+        /**
+         * Admin init.
+         * Adds SEO metaboxes.
+         *
+         * @since 2.3.14
+         */
+        public function admin_init()
+        {
+            /**
+             * @see [plugins]/buddypress/bp-activity/bp-activity-admin.php > bp_activity_admin_index()
+             */
+            add_meta_box(
+                'all-in-one-seo-pack',
+                __( 'All in One SEO Pack', 'all-in-one-seo-pack' ),
+                array( &$this, 'display_seo_metabox' ),
+                'toplevel_page_bp-activity', // Activity edit
+                'normal',
+                'low'
+            );
+        }
+        /**
+         * Displays SEO metabox.
+         *
+         * @since 2.3.14
+         */
+        public function display_seo_metabox()
+        {
+            ob_start();
+            ?>
+            <div class="aioseop_tabs">
+                <!--TODO tabs-->
+            </div>
+            <?php
+            echo ob_get_clean();
         }
     }
 }
