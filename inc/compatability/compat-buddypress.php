@@ -13,6 +13,15 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
     class All_in_One_SEO_Pack_BuddyPress extends All_in_One_SEO_Pack_Module {
 
         /**
+         * BuddyPress specific AIOSEOP metaboxes.
+         *
+         * @since 2.3.14
+         *
+         * @var array
+         */
+        protected $metabox = array( 'args' => array() );
+
+        /**
          * Prefix.
          *
          * @since 2.3.14
@@ -41,6 +50,27 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
             add_filter( 'aioseop_title', array( &$this, 'filter_title' ), 10 );
             add_filter( 'aioseop_description', array( &$this, 'filter_description' ), 1, 2 );
             add_action( 'admin_init', array( &$this, 'admin_init' ) );
+        }
+
+        /**
+         * Admin init.
+         * Adds SEO metaboxes.
+         *
+         * @since 2.3.14
+         */
+        public function admin_init()
+        {
+            /**
+             * @see [plugins]/buddypress/bp-activity/bp-activity-admin.php > bp_activity_admin_index()
+             */
+            add_meta_box(
+                'aiosp_buddypress',
+                __( 'All in One SEO Pack', 'all-in-one-seo-pack' ),
+                array( &$this, 'display_seo_metabox' ),
+                'toplevel_page_bp-activity', // Activity edit
+                'normal',
+                'low'
+            );
         }
 
         /**
@@ -122,39 +152,63 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
             return $description;
         }
         /**
-         * Admin init.
-         * Adds SEO metaboxes.
-         *
-         * @since 2.3.14
-         */
-        public function admin_init()
-        {
-            /**
-             * @see [plugins]/buddypress/bp-activity/bp-activity-admin.php > bp_activity_admin_index()
-             */
-            add_meta_box(
-                'all-in-one-seo-pack',
-                __( 'All in One SEO Pack', 'all-in-one-seo-pack' ),
-                array( &$this, 'display_seo_metabox' ),
-                'toplevel_page_bp-activity', // Activity edit
-                'normal',
-                'low'
-            );
-        }
-        /**
          * Displays SEO metabox.
          *
          * @since 2.3.14
+         *
+         * @global object $aiosp All in one seo class instance.
          */
         public function display_seo_metabox()
         {
+            global $aiosp;
+            $this->metabox['args'][] = array(
+                'id'            => 'aiosp',
+                'title'         => 'All in One SEO Pack',
+                'callback'      => array( &$aiosp, 'display_metabox' ),
+                'callback_args' => array(
+                                    'help-link' => 'https://semperplugins.com/sections/postpage-settings/',
+                                    'options'   => array(
+                                                    'edit',
+                                                    //'nonce-aioseop-edit',
+                                                    //'snippet',
+                                                    'title',
+                                                    //'description',
+                                                    //'keywords',
+                                                    //'custom_link',
+                                                    //'noindex',
+                                                    //'nofollow',
+                                                    //'disable',
+                                                    //'disable_analytics',
+                                                ),
+                                    'default_options' => array(
+                                                    'edit'  => array(
+                                                                'type'      => 'hidden',
+                                                                'default'   => 'aiosp_edit',
+                                                                'prefix'    => 1,
+                                                                'nowrap'    => 1,
+                                                            ),
+                                                    'title'  => array(
+                                                                'name'      => 'Title',
+                                                                'type'      => 'text',
+                                                                'count'     => 1,
+                                                                'size'      => 60,
+                                                                'help_text' => 'A custom title that shows up in the title tag for this page.',
+                                                            ),
+                                                ),
+                                )
+            );
+            /*
             ob_start();
             ?>
-            <div class="aioseop_tabs">
-                <!--TODO tabs-->
-            </div>
+                <pre>
+                    <?php print_r(
+                        apply_filters( 'aioseop_add_post_metabox', array() )
+                    ) ?>
+                </pre>
             <?php
             echo ob_get_clean();
+            */
+            $aiosp->display_tabbed_metabox(null, $this->metabox);
         }
     }
 }
