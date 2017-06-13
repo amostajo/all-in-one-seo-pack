@@ -50,6 +50,9 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
             add_filter( 'aioseop_title', array( &$this, 'filter_title' ), 10 );
             add_filter( 'aioseop_description', array( &$this, 'filter_description' ), 1, 2 );
             add_action( 'admin_init', array( &$this, 'admin_init' ) );
+            // Enqueue
+            if ( $_GET['page'] === 'bp-activity' && $_GET['action'] === 'edit' )
+                add_action( 'admin_enqueue_scripts', array( &$this, 'admin_enqueue' ) );
         }
 
         /**
@@ -71,6 +74,20 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
                 'normal',
                 'low'
             );
+        }
+
+        /**
+         * Enqueues AIOSEOP assets.
+         *
+         * @since 2.3.14
+         *
+         * @global object $aiosp AIOSEOP class instance.
+         */
+        public function admin_enqueue() {
+            global $aiosp;
+            $aiosp->admin_enqueue_scripts();
+            $aiosp->enqueue_styles();
+            $aiosp->enqueue_scripts();
         }
 
         /**
@@ -156,10 +173,9 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_BuddyPress' ) ) {
          *
          * @since 2.3.14
          *
-         * @global object $aiosp All in one seo class instance.
+         * @global object $aiosp AIOSEOP class instance.
          */
-        public function display_seo_metabox()
-        {
+        public function display_seo_metabox() {
             global $aiosp;
             $this->metabox['args'][] = array(
                 'id'            => 'aiosp',
