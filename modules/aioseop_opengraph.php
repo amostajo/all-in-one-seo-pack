@@ -1139,7 +1139,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 				if ( empty( $type ) ) {
 					$type = 'article';
 				}
-			} else if ( is_category() || is_tag() || is_tax() ) {
+			} else if ( AIOSEOPPRO && ( is_category() || is_tag() || is_tax() ) ) {
 				if ( isset( $this->options['aioseop_opengraph_settings_category'] ) )
 					$type = $this->options['aioseop_opengraph_settings_category'];
 				if ( isset( $metabox['aioseop_opengraph_settings_category'] ) )
